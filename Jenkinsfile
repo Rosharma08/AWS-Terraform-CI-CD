@@ -50,5 +50,24 @@ pipeline {
                 }
             }
         }
+
+        stage('Wait for Approval to Destroy') {
+            steps {
+                input message: 'AWS resources verify ho gaye? Destroy karne ke liye Proceed dabayein:', ok: 'Destroy Now'
+            }
+        }
+
+        stage('Terraform Destroy') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-terraform',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
+                    sh 'terraform -chdir=Root_Modules destroy -auto-approve'
+                }
+            }
+        }
     }
 }
