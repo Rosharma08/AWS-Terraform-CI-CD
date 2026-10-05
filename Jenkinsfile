@@ -24,7 +24,7 @@ pipeline {
                 sh 'terraform -chdir=Root_Modules validate'
             }
         }
-
+        /*
         stage('Terraform Plan') {
             steps {
                 withCredentials([[
@@ -56,7 +56,7 @@ pipeline {
                 input message: 'AWS resources verify ho gaye? Destroy karne ke liye Proceed dabayein:', ok: 'Destroy Now'
             }
         }
-
+        */
         stage('Terraform Destroy') {
             steps {
                 withCredentials([[
