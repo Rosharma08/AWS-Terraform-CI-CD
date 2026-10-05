@@ -1,11 +1,21 @@
 pipeline {
     agent any
 
-    stages {
+    environment {
+        AWS_DEFAULT_REGION = 'ap-south-1' // Agar aapka region alag hai to yahan change karein (jaise us-east-1)
+    }
 
+    stages {
         stage('Terraform Init') {
             steps {
-                sh 'terraform -chdir=Root_Modules init'
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-terraform',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
+                    sh 'terraform -chdir=Root_Modules init'
+                }
             }
         }
 
@@ -17,9 +27,15 @@ pipeline {
 
         stage('Terraform Plan') {
             steps {
-                sh 'terraform -chdir=Root_Modules plan'
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-terraform',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                ]]) {
+                    sh 'terraform -chdir=Root_Modules plan'
+                }
             }
         }
-
     }
 }
